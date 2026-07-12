@@ -1,49 +1,67 @@
 import os
+import subprocess
 
-number = input("Problem Number : ").strip()
-name = input("Problem Name   : ").strip()
-difficulty = input("Difficulty (Easy/Medium/Hard): ").strip()
-topic = input("Topic          : ").strip()
+print("=" * 50)
+print("🚀 LeetCode Repository Manager")
+print("=" * 50)
+
+# Input
+number = int(input("Problem Number : "))
+name = input("Problem Name : ").strip().title()
+topic = input("Topic : ").strip().title()
 language = input("Language (cpp/python/java): ").strip().lower()
 
-folder_name = f"{int(number):04d}-{name.replace(' ', '-')}"
+# Folder name
+folder_name = f"{number:04d}-{'-'.join(name.split())}"
 
-topic_path = os.path.join(topic)
-
-os.makedirs(topic_path, exist_ok=True)
-
-problem_path = os.path.join(topic_path, folder_name)
-
+# Create folder structure
+problem_path = os.path.join(topic, folder_name)
 os.makedirs(problem_path, exist_ok=True)
 
-extension = {
-    "cpp":"cpp",
-    "python":"py",
-    "java":"java"
-}.get(language,"txt")
+# File extension
+extensions = {
+    "cpp": "cpp",
+    "python": "py",
+    "java": "java"
+}
 
-solution_file = os.path.join(problem_path,f"solution.{extension}")
+extension = extensions.get(language, "txt")
+solution_file = os.path.join(problem_path, f"solution.{extension}")
 
-with open(solution_file,"w") as f:
+print("\nPaste your solution below.")
+print("When finished:")
+print("👉 Windows: Press Ctrl+Z and then Enter")
+print("👉 Linux/macOS: Press Ctrl+D")
+print("-" * 50)
+
+# Read solution
+lines = []
+
+try:
+    while True:
+        lines.append(input())
+except EOFError:
     pass
 
-readme = f"""# {number}. {name}
+code = "\n".join(lines)
 
-Difficulty : {difficulty}
+# Save solution
+with open(solution_file, "w", encoding="utf-8") as f:
+    f.write(code)
 
-## Approach
+print(f"\n✅ Created: {solution_file}")
 
+# Git operations
+try:
+    subprocess.run(["git", "add", "."], check=True)
+    subprocess.run(
+        ["git", "commit", "-m", f"Solve {folder_name}"],
+        check=True
+    )
+    subprocess.run(["git", "push"], check=True)
 
+    print("\n🚀 Successfully pushed to GitHub!")
 
-## Complexity
-
-Time :
-
-Space :
-"""
-
-with open(os.path.join(problem_path,"README.md"),"w") as f:
-    f.write(readme)
-
-print("\n✅ Problem folder created successfully!")
-print(problem_path)
+except subprocess.CalledProcessError:
+    print("\n⚠ Git operation failed.")
+    print("Please check your git configuration or internet connection.")
